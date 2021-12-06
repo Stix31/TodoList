@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,44 +6,64 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  @ViewChild('DetailTodo') DetailTodo: ElementRef;
+  
   title = 'TodoList';
-  data = {
-      "todoList" : [
-        {
-          "position": 0,
-          "status": "Open",
-          "description": "To finish my TodoList"
-      }, {
-          "position": 1,
-          "status": "Open",
-          "description": "Get the bred ths evening"
-      }, {
-          "position": 2,
-          "status": "Closed",
-          "description": "Validate the meeting"
-      },
-    ]
+  private url = "http://localhost:3000"
+  private data = {
+    value: []
   };
-
+  constructor() {
+    // Get data in the server
+    fetch(this.url + "/todoList")
+      .then(response => response.json())
+      .then(response => this.data = response)
+      .catch(error => alert("Erreur : " + error));
+  }
   /**
-   * Change status of the element.
+   * Change progrees status of the element.
    */
   public changeStatus(position: number, event: { target: { checked: any; }; }) {
-    if (event.target.checked) {
-      let finnishedTodo = this.data.todoList[position];
-      finnishedTodo.status = "Closed";
-      this.data.todoList.splice(position, 1);
-      this.data.todoList.push(finnishedTodo);
-    } else {
-      let unfinnishedTodo = this.data.todoList[position];
-      unfinnishedTodo.status = "Open";
-      this.data.todoList.splice(position, 1);
-      let inserIndex = this.data.todoList.findIndex((elem) => elem.status === "Closed");
-      console.log(inserIndex);
-      this.data.todoList.splice(inserIndex, 0, unfinnishedTodo);
-    }
-    let pos = 0;
-    this.data.todoList.forEach((todo) => todo.position = pos++);
+    let params = { todoValue: position.toString(), checkValue: event.target.checked };
+    let url = new URL(this.url + "/checkTodoList");
+    url.search = new URLSearchParams(params).toString();
+    fetch(url.href)
+      .then(response => response.json())
+      .then(response => this.data = response)
+      .catch(error => alert("Erreur : " + error));
   }
 
+  /**
+   * get description
+   */
+  public getTodo(todo, event) {
+    this.DetailTodo.nativeElement.innerHTML = "";
+    let detail = "\
+    <div class=\"row justify-content-center\">\
+      <div class=\"col-auto\">\
+        <table class=\"table table-responsive\">\
+          <caption>Description</caption>\
+            <thead>\
+            <tr>\
+              <th class=\"text-center\" scope=\"col\"> Description </th>\
+            </tr>\
+            </thead>\
+            <tbody>\
+              <tr>\
+                </th>\
+                  <td>" + todo.description + "</td>\
+                </tr>\
+            </tbody>\
+          </table>\
+      </div>\
+    </div>";
+    this.DetailTodo.nativeElement.insertAdjacentHTML('beforeend', detail);
+  }
+
+  /**
+  * name
+  */
+  public closeDescription(){
+    this.DetailTodo.nativeElement.innerHTML = "";
+  }
 }
