@@ -169,6 +169,17 @@ export class AppComponent {
       .catch(error => alert("Erreur : " + error));
   }
 
+  public deleteTodo(position: string): void {
+    console.log(position)
+    let params = { position: position };
+    let url = new URL(this.url + "/deleteTodo");
+    url.search = new URLSearchParams(params).toString();
+    fetch(url.href)
+      .then(response => response.json())
+      .then(response => this.data = response)
+      .catch(error => alert("Erreur : " + error));
+  }
+
   /**
   * name
   */

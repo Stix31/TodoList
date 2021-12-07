@@ -15,6 +15,7 @@
             <th scope="col">Status</th>
             <th scope="col">Description</th>
             <th scope="col">Finnish Todo</th>
+            <th scope="col">Delete Todo</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +24,7 @@
             <td>{{list.status}}</td>
             <td (click)="getTodo(list, $event)">{{list.title}}</td>
             <td><input type="checkbox" aria-label="Checkbox for closing todo" [checked]="list.status === 'Closed'" (change)="changeStatus(list.position,$event)"></td>
+            <td><button type="button" class="btn btn-danger" (click)="deleteTodo(list.position)">Delete</button></td>
           </tr>
         </tbody>
       </table>

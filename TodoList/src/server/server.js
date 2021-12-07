@@ -70,7 +70,6 @@ app.get('/getDescription', (req, res) => {
     const params = req.query;
     let selectedTodo = params;
     let sendData = { value: data.value[selectedTodo.todoValue].description};
-    console.log(sendData);
     res.send(JSON.stringify(sendData));
 });
 
@@ -78,12 +77,18 @@ app.get('/addTodo', (req, res) => {
     const params = req.query;
     let title = params.title;
     let description = params.description;
-    console.log(data);
     data.value.forEach(element => {
         element.position++;
     });
     data.value.unshift({ position: 0, status: "Open", title: title, description: description });
-    console.log(data);
+    res.send(JSON.stringify(data));
+});
+
+app.get('/deleteTodo', (req, res) => {
+    const params = req.query;
+    let position = parseInt(params.position);
+    data.value.splice(position, 1);
+    data.value.forEach((element, index) => element.position = index);
     res.send(JSON.stringify(data));
 });
 
