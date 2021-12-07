@@ -7,11 +7,12 @@ npm install
 ```
 ng serve
 ```
+Connect to the url : http://localhost:4002
 ## Launch server
 ```
 node ./src/server/server.js
 ```
-
+The server emit on the port 3000
 # Context
 Our fantastic product owner has a wonderful, amazing and revolutionary idea... he wants to build a new Todo application. 
 He has a good idea of the application behavior and comes with a backlog containing the following user stories :
