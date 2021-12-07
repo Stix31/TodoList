@@ -7,7 +7,7 @@ npm install
 ```
 ng serve
 ```
-Connect to the url : http://localhost:4002
+Connect to the url : http://localhost:4200
 ## Launch server
 ```
 node ./src/server/server.js
