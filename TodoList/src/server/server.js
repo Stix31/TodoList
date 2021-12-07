@@ -74,6 +74,18 @@ app.get('/getDescription', (req, res) => {
     res.send(JSON.stringify(sendData));
 });
 
+app.get('/addTodo', (req, res) => {
+    const params = req.query;
+    let title = params.title;
+    let description = params.description;
+    console.log(data);
+    data.value.forEach(element => {
+        element.position++;
+    });
+    data.value.unshift({ position: 0, status: "Open", title: title, description: description });
+    console.log(data);
+    res.send(JSON.stringify(data));
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
