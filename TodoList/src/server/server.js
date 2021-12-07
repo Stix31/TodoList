@@ -38,7 +38,7 @@ app.get('/todoList', (req, res) => {
         }
     })};
     res.send(sendData);
-})
+});
 
 
 /*
@@ -64,7 +64,15 @@ app.get('/checkTodoList', (req, res) => {
     let pos = 0;
     data.value.forEach((todo) => todo.position = pos++);
     res.send(data);
-})
+});
+
+app.get('/getDescription', (req, res) => {
+    const params = req.query;
+    let selectedTodo = params;
+    let sendData = { value: data.value[selectedTodo.todoValue].description};
+    console.log(sendData);
+    res.send(JSON.stringify(sendData));
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)

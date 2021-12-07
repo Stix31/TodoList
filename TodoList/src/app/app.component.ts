@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -7,13 +7,12 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 })
 export class AppComponent {
   @ViewChild('DetailTodo') DetailTodo: ElementRef;
-  
-  title = 'TodoList';
-  private url = "http://localhost:3000"
+  public title: string = 'TodoList';
+  private url: string = "http://localhost:3000"
   private data = {
     value: []
   };
-  constructor() {
+  constructor(private renderer: Renderer2) {
     // Get data in the server
     fetch(this.url + "/todoList")
       .then(response => response.json())
@@ -23,7 +22,7 @@ export class AppComponent {
   /**
    * Change progrees status of the element.
    */
-  public changeStatus(position: number, event: { target: { checked: any; }; }) {
+  public changeStatus(position: number, event: { target: { checked: any; }; }): void {
     let params = { todoValue: position.toString(), checkValue: event.target.checked };
     let url = new URL(this.url + "/checkTodoList");
     url.search = new URLSearchParams(params).toString();
@@ -36,29 +35,40 @@ export class AppComponent {
   /**
    * get description
    */
-  public getTodo(todo, event) {
-    this.DetailTodo.nativeElement.innerHTML = "";
-    let detail = "\
-    <div class=\"row justify-content-center\">\
-      <div class=\"col-auto\">\
-        <table class=\"table table-responsive\">\
-          <caption>Description</caption>\
-            <thead>\
-            <tr>\
-              <th class=\"text-center\" scope=\"col\"> Description </th>\
-            </tr>\
-            </thead>\
-            <tbody>\
-              <tr>\
-                </th>\
-                  <td>" + todo.description + "</td>\
-                </tr>\
-            </tbody>\
-          </table>\
-      </div>\
-    </div>";
-    this.DetailTodo.nativeElement.insertAdjacentHTML('beforeend', detail);
+  public getTodo(todo, event): void {
+    let params = { todoValue: JSON.stringify(todo.position) };
+    let url = new URL(this.url + "/getDescription");
+    url.search = new URLSearchParams(params).toString();
+    let description;
+    fetch(url.href)
+      .then(response => response.json())
+      .then(response => {
+        description = response.value
+        this.DetailTodo.nativeElement.innerHTML = "";
+        let detail = "\
+          <div class=\"row justify-content-center\">\
+            <div class=\"col-auto\">\
+              <table class=\"table table-responsive\">\
+                <caption>Description</caption>\
+                <thead>\
+                  <tr>\
+                    <th class=\"text-center\" scope=\"col\"> Description </th>\
+                  </tr>\
+                </thead>\
+                <tbody>\
+                  <tr>\
+                    <td>" + description + "</td>\
+                  </tr>\
+                </tbody>\
+              </table>\
+            </div>\
+          </div>";
+        this.DetailTodo.nativeElement.insertAdjacentHTML('beforeend', detail);
+      })
+      .catch(error => alert("Erreur : " + error));
   }
+
+  
 
   /**
   * name
