@@ -1,6 +1,8 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
 const port = 3000;
+const jsonParser = bodyParser.json();
 
 var data = {
     "value": [
@@ -29,64 +31,67 @@ app.use(function (req, res, next) {
     next();
 });
 
+/**
+ * Return the todo list.
+ */
 app.get('/todoList', (req, res) => {
-    let sendData = { value : data.value.map((todo) => {
-        return { 
-            position: todo.position,
-            status: todo.status,
-            title: todo.title
-        }
-    })};
-    res.send(sendData);
+    res.send({
+        value: data.value.map((todo) => {
+            return {
+                position: todo.position,
+                status: todo.status,
+                title: todo.title
+            }
+        })
+    });
 });
 
 
 /*
  * Send the list of todo with the todo that has been checked or unchecked.
- * 
  */
 app.get('/checkTodoList', (req, res) => {
-    const params = req.query
-    let todoPosition = params.todoValue;
-    let todoToModify = data.value[todoPosition];
-    let status = params.checkValue;
-    if (status === "true") {
+    const todo = { position: req.query.todoValue, status: req.query.checkValue };
+    let todoToModify = data.value[todo.position];
+    if (todo.status === "true") {
         todoToModify.status = "Closed";
-        data.value.splice(todoPosition, 1);
+        data.value.splice(todo.position, 1);
         data.value.push(todoToModify);
     } else {
-        let unCheckTodo = data.value[todoPosition];
-        unCheckTodo.status = "Open";
-        data.value.splice(todoPosition, 1);
-        let inserIndex = data.value.findIndex((elem) => elem.status === "Closed");
-        data.value.splice(inserIndex, 0, unCheckTodo);
+        todoToModify.status = "Open";
+        data.value.splice(todo.position, 1);
+        const inserIndex = data.value.findIndex((elem) => elem.status === "Closed");
+        data.value.splice(inserIndex, 0, todoToModify);
     }
     let pos = 0;
     data.value.forEach((todo) => todo.position = pos++);
     res.send(data);
 });
 
+/**
+ * Return the description of Todo.
+ */
 app.get('/getDescription', (req, res) => {
-    const params = req.query;
-    let selectedTodo = params;
-    let sendData = { value: data.value[selectedTodo.todoValue].description};
-    res.send(JSON.stringify(sendData));
+    res.send({ value: data.value[req.query.todoValue].description });
 });
 
-app.get('/addTodo', (req, res) => {
-    const params = req.query;
-    let title = params.title;
-    let description = params.description;
+/**
+ * Return the list with the added Todo.
+ */
+app.post('/addTodo', jsonParser, (req, res) => {
+    const todo = { title: req.body.title, description: req.body.description };
     data.value.forEach(element => {
         element.position++;
     });
-    data.value.unshift({ position: 0, status: "Open", title: title, description: description });
+    data.value.unshift({ position: 0, status: "Open", title: todo.title, description: todo.description });
     res.send(JSON.stringify(data));
 });
 
+/**
+ * Return the list with the deleted Todo.
+ */
 app.get('/deleteTodo', (req, res) => {
-    const params = req.query;
-    let position = parseInt(params.position);
+    const position = parseInt(req.query.position);
     data.value.splice(position, 1);
     data.value.forEach((element, index) => element.position = index);
     res.send(JSON.stringify(data));

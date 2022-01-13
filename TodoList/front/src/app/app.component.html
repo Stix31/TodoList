@@ -41,6 +41,9 @@
       </div>
       <div class="row justify-content-center">
         <app-todo-description [description]="description"></app-todo-description>
+        <div class="row justify-content-center">
+          <app-todo-table (newTodo)="createTodo($event)"></app-todo-table>
+        </div>
     </div>
   </div>
 </div>

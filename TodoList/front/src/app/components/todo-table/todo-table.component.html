@@ -1,3 +1,23 @@
-<p>
-  todo-table works!
-</p>
+<div class="row justify-content-center">
+  <div class="col-auto">
+    <table class="table table-responsive">
+      <caption></caption>
+      <thead></thead>
+      <tr>
+        <th class="text-center" colspan="2">Add Todo</th>
+      </tr>
+      <tbody></tbody>
+      <tr>
+        <td>Title: </td><input type="text" id="title" name="title"  value="My Todo Title" (keyup)="titleName($event)">
+      </tr>
+      <tr>
+        <td>Description: </td><input type="text" id="description" name="description" value="My Todo Description" (keyup)="descriptionName($event)">
+      </tr>
+      <tr>
+        <td colspan="2" class="text-center"><button
+            class="btn btn-success text-center"
+            (click)="createTodo()">Create</button></td>
+      </tr>
+    </table>
+  </div>
+</div>
