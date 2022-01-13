@@ -82,7 +82,7 @@ export class AppComponent {
    * @param position 
    */
   public deleteTodo(position: string): void {
-    this.http.get<PostMultipleValues>(this.URL + "/deleteTodo", { params: new HttpParams().set('position', position) })
+    this.http.delete<PostMultipleValues>(this.URL + "/deleteTodo", { params: new HttpParams().set('position', position) })
       .subscribe({ next: (value) => { this.data.multipleValues = value.value } });
   }
 

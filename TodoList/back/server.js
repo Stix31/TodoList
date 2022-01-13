@@ -28,6 +28,7 @@ var data = {
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
     next();
 });
 
@@ -90,8 +91,8 @@ app.post('/addTodo', jsonParser, (req, res) => {
 /**
  * Return the list with the deleted Todo.
  */
-app.get('/deleteTodo', (req, res) => {
-    const position = parseInt(req.query.position);
+app.delete('/deleteTodo', jsonParser, (req, res) => {
+    const position = parseInt(req.params.position);
     data.value.splice(position, 1);
     data.value.forEach((element, index) => element.position = index);
     res.send(JSON.stringify(data));
