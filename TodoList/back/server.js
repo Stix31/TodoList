@@ -64,7 +64,7 @@ app.get('/checkTodoList', (req, res) => {
         data.value.splice(inserIndex, 0, todoToModify);
     }
     let pos = 0;
-    data.value.forEach((todo) => todo.position = pos++);
+    data.value.forEach((todoElement) => todoElement.position = pos++);
     res.send(data);
 });
 
