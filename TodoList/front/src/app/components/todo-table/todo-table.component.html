@@ -4,14 +4,14 @@
       <caption></caption>
       <thead></thead>
       <tr>
-        <th class="text-center" colspan="2">Add Todo</th>
+        <th id= "th" class="text-center" colspan="2">Add Todo</th>
       </tr>
       <tbody></tbody>
       <tr>
-        <td>Title: </td><input type="text" id="title" name="title"  value="My Todo Title" (keyup)="titleName($event)">
+        <td>Title: </td><input type="text" id="title" name="title"  value={{title}} (keyup)="titleName($event)">
       </tr>
       <tr>
-        <td>Description: </td><input type="text" id="description" name="description" value="My Todo Description" (keyup)="descriptionName($event)">
+        <td>Description: </td><input type="text" id="description" name="description" value={{description}} (keyup)="descriptionName($event)">
       </tr>
       <tr>
         <td colspan="2" class="text-center"><button

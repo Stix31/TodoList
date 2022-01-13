@@ -13,7 +13,7 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">Status</th>
-            <th scope="col">Description</th>
+            <th scope="col">Title</th>
             <th scope="col">Finnish Todo</th>
             <th scope="col">Delete Todo</th>
           </tr>
@@ -22,7 +22,7 @@
           <tr *ngFor="let list of data.multipleValues">
             <th scope="row">{{list.position}}</th>
             <td>{{list.status}}</td>
-            <td (click)="getTodo(list, $event)">{{list.title}}</td>
+            <td (click)="getDescription(list, $event)" class="description">{{list.title}}</td>
             <td><input type="checkbox" aria-label="Checkbox for closing todo" [checked]="list.status === 'Closed'" (change)="changeStatus(list.position,$event)"></td>
             <td><button type="button" class="btn btn-danger" (click)="deleteTodo(list.position)">Delete</button></td>
           </tr>
@@ -31,24 +31,20 @@
     </div>
   </div>
   <div class="row">
-      <div class="row justify-content-center">
-        <div class="col-auto">
-          <button type="button" class="btn btn-danger" (click)="closeDescription()" [hidden]="closeButtonHidden">X</button>
-        </div>
-        <div class="col-auto">
-          <button #AddButton type="button" class="btn btn-primary" (click)="addTodo()">Add Todo</button>
-        </div>
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <button type="button" class="btn btn-danger" (click)="closeDescription()" *ngIf="!hideCloseButton">X</button>
       </div>
-      <div class="row justify-content-center">
-        <app-todo-description [description]="description"></app-todo-description>
-        <div class="row justify-content-center">
-          <app-todo-table (newTodo)="createTodo($event)"></app-todo-table>
-        </div>
+      <div class="col-auto">
+        <button #AddButton type="button" class="btn btn-primary" (click)="addTodo()">Add Todo</button>
+      </div>
+    </div>
+    <div class="row justify-content-center" *ngIf="!hideDescription">
+      <app-todo-description [description]="description"></app-todo-description>
+    </div>
+    <div class="row justify-content-center" *ngIf="!hideAddTodo">
+      <app-todo-table (newTodo)="createTodo($event)"></app-todo-table>
     </div>
   </div>
-</div>
-
-<div class="container">
-
 </div>
 <router-outlet></router-outlet>

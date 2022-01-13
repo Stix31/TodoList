@@ -11,7 +11,9 @@ export class AppComponent {
   @ViewChild('AddButton') addButton: ElementRef;
   readonly TITLE: string = 'TodoList';
   readonly URL: string = "http://localhost:3000"
-  public closeButtonHidden: boolean;
+  public hideCloseButton: boolean;
+  public hideDescription: boolean;
+  public hideAddTodo: boolean;
   public description;
   public data = {
     multipleValues: []
@@ -20,7 +22,9 @@ export class AppComponent {
   constructor(private renderer: Renderer2, private http: HttpClient) {
     // Get data in the server
     this.http.get<PostMultipleValues>(this.URL + "/todoList").subscribe({ next: (value) => { this.data.multipleValues = value.value; } });
-    this.closeButtonHidden = true;
+    this.hideCloseButton = true;
+    this.hideAddTodo = true;
+    this.hideDescription = true;
   }
 
   /**
@@ -37,9 +41,9 @@ export class AppComponent {
   /**
    * get description
    */
-  public getTodo(todo, event): void {
-    this.renderer.setAttribute(this.addButton.nativeElement, 'disabled', 'disabled');
-    this.closeButtonHidden = false;
+  public getDescription(todo, event): void {
+    this.hideDescription = false;
+    this.hideCloseButton = false;
     this.http.get<PostSingleValue>(this.URL + "/getDescription", { params: new HttpParams().set('todoValue', todo.position) })
       .subscribe({ next: (value) => { this.description = value.value } });
   }
@@ -49,8 +53,9 @@ export class AppComponent {
    * @returns void
    */
   public addTodo(): void {
-    this.closeButtonHidden = false;
-    if (this.detailTodo.nativeElement.innerText !== "" || this.detailTodo.nativeElement.innerText.includes("Description")) return
+    if (!this.hideDescription) return
+    this.hideCloseButton = false;
+    this.hideAddTodo = false;
   }
 
   /**
@@ -86,7 +91,8 @@ export class AppComponent {
   */
   public closeDescription(){
     this.description = ""
-    this.closeButtonHidden = true;
-    this.renderer.removeAttribute(this.addButton.nativeElement, 'disabled');
+    this.hideCloseButton = true;
+    this.hideAddTodo = true;
+    this.hideDescription = true;
   }
 }
