@@ -1,26 +1,24 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
-
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { PostSingleValue, PostMultipleValues } from './post';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  @ViewChild('DetailTodo') detailTodo: ElementRef;
   @ViewChild('AddButton') addButton: ElementRef;
-  public title: string = 'TodoList';
-  private url: string = "http://localhost:3000"
+  readonly TITLE: string = 'TodoList';
+  readonly URL: string = "http://localhost:3000"
   public closeButtonHidden: boolean;
-  private data = {
-    value: []
+  public description;
+  public data = {
+    multipleValues: []
   };
 
-  constructor(private renderer: Renderer2) {
+  constructor(private renderer: Renderer2, private http: HttpClient) {
     // Get data in the server
-    fetch(this.url + "/todoList")
-      .then(response => response.json())
-      .then(response => this.data = response)
-      .catch(error => alert("Erreur : " + error));
+    this.http.get<PostMultipleValues>(this.URL + "/todoList").subscribe({ next: (value) => { this.data.multipleValues = value.value; } });
     this.closeButtonHidden = true;
   }
 
@@ -28,13 +26,11 @@ export class AppComponent {
    * Change progrees status of the element.
    */
   public changeStatus(position: number, event: { target: { checked: any; }; }): void {
-    let params = { todoValue: position.toString(), checkValue: event.target.checked };
-    let url = new URL(this.url + "/checkTodoList");
-    url.search = new URLSearchParams(params).toString();
-    fetch(url.href)
-      .then(response => response.json())
-      .then(response => this.data = response)
-      .catch(error => alert("Erreur : " + error));
+    let params = new HttpParams();
+    params = params.append('todoValue', position.toString());
+    params = params.append('checkValue', event.target.checked);
+    this.http.get<PostMultipleValues>(this.URL + "/checkTodoList", { params: params})
+      .subscribe({ next: (value) => { this.data.multipleValues = value.value; } });
   }
 
   /**
@@ -43,37 +39,8 @@ export class AppComponent {
   public getTodo(todo, event): void {
     this.renderer.setAttribute(this.addButton.nativeElement, 'disabled', 'disabled');
     this.closeButtonHidden = false;
-
-    let params = { todoValue: JSON.stringify(todo.position) };
-    let url = new URL(this.url + "/getDescription");
-    url.search = new URLSearchParams(params).toString();
-    let description;
-    fetch(url.href)
-      .then(response => response.json())
-      .then(response => {
-        description = response.value
-        this.detailTodo.nativeElement.innerHTML = "";
-        let detail = "\
-          <div class=\"row justify-content-center\">\
-            <div class=\"col-auto\">\
-              <table class=\"table table-responsive\">\
-                <caption>Description</caption>\
-                <thead>\
-                  <tr>\
-                    <th class=\"text-center\" scope=\"col\"> Description </th>\
-                  </tr>\
-                </thead>\
-                <tbody>\
-                  <tr>\
-                    <td>" + description + "</td>\
-                  </tr>\
-                </tbody>\
-              </table>\
-            </div>\
-          </div>";
-        this.detailTodo.nativeElement.insertAdjacentHTML('beforeend', detail);
-      })
-      .catch(error => alert("Erreur : " + error));
+    this.http.get<PostSingleValue>(this.URL + "/getDescription", { params: new HttpParams().set('todoValue', todo.position) })
+      .subscribe({ next: (value) => { this.description = value.value } });
   }
 
   /**
@@ -82,10 +49,10 @@ export class AppComponent {
    */
   public addTodo(): void {
     this.closeButtonHidden = false;
-    if (this.detailTodo.nativeElement.innerText !== "" || this.detailTodo.nativeElement.innerText.includes("Description")) return
+    //if (this.detailTodo.nativeElement.innerText !== "" || this.detailTodo.nativeElement.innerText.includes("Description")) return
     const tableContainer = this.renderer.createElement('div');
     this.renderer.setAttribute(tableContainer, 'class', 'row justify-content-center');
-    this.renderer.appendChild(this.detailTodo.nativeElement, tableContainer);
+    //this.renderer.appendChild(this.detailTodo.nativeElement, tableContainer);
     
     const tableRowContainer = this.renderer.createElement('div');
     this.renderer.setAttribute(tableRowContainer, 'class', 'col-auto');
@@ -158,33 +125,35 @@ export class AppComponent {
     return tableContainer;
   }
 
-  private createTodo(title: string, description: string): void {
+  /**
+   * 
+   * @param title 
+   * @param description 
+   * @returns 
+   */
+  public createTodo(title: string, description: string): void {
     if (title === "") { alert("The title musnt be empty"); return }
-    let params = { title: JSON.stringify(title), description : description };
-    let url = new URL(this.url + "/addTodo");
-    url.search = new URLSearchParams(params).toString();
-    fetch(url.href)
-      .then(response => response.json())
-      .then(response => this.data = response)
-      .catch(error => alert("Erreur : " + error));
+    let params = new HttpParams();
+    params = params.append('title', title);
+    params = params.append('description', description);
+    this.http.post<PostMultipleValues>(this.URL + "/addTodo", { params: params })
+      .subscribe({ next: (value) => { this.data.multipleValues = value.value; } });
   }
 
+  /**
+   * 
+   * @param position 
+   */
   public deleteTodo(position: string): void {
-    console.log(position)
-    let params = { position: position };
-    let url = new URL(this.url + "/deleteTodo");
-    url.search = new URLSearchParams(params).toString();
-    fetch(url.href)
-      .then(response => response.json())
-      .then(response => this.data = response)
-      .catch(error => alert("Erreur : " + error));
+    this.http.get<PostMultipleValues>(this.URL + "/deleteTodo", { params: new HttpParams().set('position', position) })
+      .subscribe({ next: (value) => { this.data.multipleValues = value.value } });
   }
 
   /**
   * name
   */
   public closeDescription(){
-    this.detailTodo.nativeElement.innerHTML = "";
+    this.description = ""
     this.closeButtonHidden = true;
     this.renderer.removeAttribute(this.addButton.nativeElement, 'disabled');
   }

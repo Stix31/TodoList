@@ -19,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let list of data.value">
+          <tr *ngFor="let list of data.multipleValues">
             <th scope="row">{{list.position}}</th>
             <td>{{list.status}}</td>
             <td (click)="getTodo(list, $event)">{{list.title}}</td>
@@ -40,8 +40,7 @@
         </div>
       </div>
       <div class="row justify-content-center">
-        <div #DetailTodo>
-      </div>
+        <app-todo-description [description]="description"></app-todo-description>
     </div>
   </div>
 </div>
